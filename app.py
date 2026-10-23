@@ -265,6 +265,109 @@ def resume_hitl_execution(decision):
         st.rerun()
 
 
+# ========================= Docs / guidelines =========================
+
+@st.dialog("📖 Docs & Guidelines", width="large")
+def show_docs_dialog():
+    """Popup that explains what the user can do in this app."""
+
+    tab_start, tab_docs, tab_approval, tab_tips = st.tabs(
+        ["🚀 Getting started", "📄 Documents", "✅ Approvals", "💡 Tips"]
+    )
+
+    with tab_start:
+        st.markdown(
+            """
+### What you can do
+- 💬 **Chat** with the AI assistant and ask any question.
+- 📄 **Upload documents** (PDF, DOCX, TXT) and ask questions about them.
+- 🔧 **Use built-in tools.** The assistant picks the right tool for your request,
+  and you can see which tool is running in the status box above the answer.
+- ✅ **Approve or reject** important actions before they are executed.
+- 🗂️ **Keep many chats.** Every chat is saved and listed in the sidebar.
+
+### Available tools
+| Tool | What it does | Example prompt |
+|---|---|---|
+| 📚 **Document search (RAG)** | Finds answers inside the files you uploaded | *"What does the report say about risks?"* |
+| 🌐 **Web search** | Looks up current information online | *"Latest news about electric cars"* |
+| 🧮 **Calculator** | Does math and calculations | *"What is 15% of 2,450?"* |
+| 📈 **Stock price** | Gets the current price of a stock | *"What is the price of AAPL?"* |
+| 🛒 **Buy stock** | Places a purchase after **your approval** | *"Buy 5 shares of TSLA"* |
+
+You don't need to choose a tool yourself. Just ask in plain language.
+
+### Using the sidebar
+| Button | What it does |
+|---|---|
+| ➕ **New chat** | Starts a fresh conversation (enabled after your first message) |
+| 📖 **Docs** | Opens this guide |
+| Chat title | Opens a past chat. The title is your first message |
+            """
+        )
+
+    with tab_docs:
+        st.markdown(
+            """
+### Upload and ask about a document
+1. Click the **attachment** icon in the message box.
+2. Choose a file. Supported types: **PDF, DOCX, TXT**.
+3. Press send. The file is indexed (a spinner shows progress).
+4. Ask your question, for example:
+   - *"Summarize the uploaded document."*
+   - *"What does the document say about payment terms?"*
+   - *"List the key dates in the file."*
+
+You can send the file together with your question in one message.
+
+### Good to know
+- The same file is not indexed twice in one session.
+- If indexing fails, you will see an error. Try again or check the file.
+- Scanned PDFs (images only) may not contain readable text.
+- Large files can take longer to index.
+            """
+        )
+
+    with tab_approval:
+        st.markdown(
+            """
+### Human approval (safety check)
+Some actions, such as **buying a stock**, need your confirmation first.
+
+1. Ask the assistant to do the action.
+2. The assistant pauses and shows an **Approval required** box.
+3. Read the details, then choose:
+   - **✅ Approve** to run the action.
+   - **❌ Reject** to cancel it.
+4. The assistant continues and tells you the result.
+
+### Rules
+- While an approval is waiting, the message box is **locked**.
+  Approve or reject first.
+- The approval stays pending if you refresh the page or switch chats.
+  Open the same chat and the buttons will be there.
+- Nothing is executed until you click **Approve**.
+            """
+        )
+
+    with tab_tips:
+        st.markdown(
+            """
+### Tips for better answers
+- Be specific: *"Compare the 2023 and 2024 revenue in the report"*
+  works better than *"tell me about the file"*.
+- Ask one thing at a time for complex tasks.
+- Mention the document name if you uploaded several.
+- Use **New chat** for a new topic so answers stay focused.
+
+### Limits
+- The assistant can make mistakes. Check important facts.
+- Answers about a document are based only on what was indexed.
+- Do not share passwords or sensitive personal data.
+            """
+        )
+
+
 # ---------- session state ----------
 if "titles" not in st.session_state:
     st.session_state.titles = {}
@@ -295,6 +398,11 @@ with st.sidebar:
     if st.button("➕ New chat", use_container_width=True, disabled=not current_messages):
         start_new_chat()
         st.rerun()
+
+    if st.button("📖 Docs", use_container_width=True, key="open_docs"):
+        show_docs_dialog()
+
+    st.divider()
 
     saved = list_saved_threads()
 
